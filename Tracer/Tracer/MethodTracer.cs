@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Tracer
 {
@@ -13,12 +9,25 @@ namespace Tracer
         private string name;
         private string className;
         private long time;
+        private Stopwatch stopwatch = new Stopwatch();
 
         internal string Name { get; private set;}
 
         internal string ClassName { get; private set; }
 
-        internal long Time { get; set; }
+        internal long Time
+        {
+            get
+            {
+                if (!stopwatch.IsRunning)
+                {
+                    return stopwatch.ElapsedMilliseconds;
+                } else
+                {
+                    return -1;
+                }
+            }
+        }
         
         internal List<MethodTracer> InnerMethods
         {
@@ -41,6 +50,17 @@ namespace Tracer
         {
             name = methodName;
             className = methodClassName;
+            stopwatch = new Stopwatch();
+        }
+
+        internal void StartTrace()
+        {
+            stopwatch.Start();
+        }
+
+        internal void StopTrace()
+        {
+            stopwatch.Stop();
         }
     }
 }
