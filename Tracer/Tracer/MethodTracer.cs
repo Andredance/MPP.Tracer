@@ -43,7 +43,7 @@ namespace Tracer
 
         internal void AddInnerMethod(MethodTracer method)
         {
-            innerMethods.Add(method);
+            InnerMethods.Add(method);
         }
 
         internal MethodTracer(string methodName , string methodClassName)
