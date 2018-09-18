@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Tracer
@@ -24,7 +25,7 @@ namespace Tracer
                     return stopwatch.ElapsedMilliseconds;
                 } else
                 {
-                    return -1;
+                    throw new Exception("Stopwatch is running");
                 }
             }
         }
