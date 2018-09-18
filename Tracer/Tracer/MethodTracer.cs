@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Tracer
 {
-    internal class MethodResult
+    internal class MethodTracer
     {
-        private List<MethodResult> innerMethods;
+        private List<MethodTracer> innerMethods;
         private string name;
         private string className;
         private long time;
@@ -20,24 +20,24 @@ namespace Tracer
 
         internal long Time { get; set; }
         
-        internal List<MethodResult> InnerMethods
+        internal List<MethodTracer> InnerMethods
         {
             get
             {
                 if (innerMethods == null)
                 {
-                    innerMethods = new List<MethodResult>();
+                    innerMethods = new List<MethodTracer>();
                 }
                 return innerMethods;
             }
         }
 
-        internal void AddInnerMethod(MethodResult method)
+        internal void AddInnerMethod(MethodTracer method)
         {
             innerMethods.Add(method);
         }
 
-        internal MethodResult(string methodName , string methodClassName)
+        internal MethodTracer(string methodName , string methodClassName)
         {
             name = methodName;
             className = methodClassName;
