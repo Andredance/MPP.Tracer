@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Tracer
 {
-    class ThreadResult
+    public class ThreadTracer
     {
+
     }
 }
