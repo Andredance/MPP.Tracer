@@ -79,7 +79,7 @@ namespace Tracer
 
         internal ThreadTracer(int id)
         {
-            ThreadId = id;
+            threadId = id;
         }
 
 
