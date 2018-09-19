@@ -20,26 +20,23 @@ namespace Tracer
 
         internal TraceResult() { }
 
-        internal bool AddThreadResult(int id)
+        internal ThreadTracer AddThreadTracer(int id, ThreadTracer value)
         {
-            ThreadTracer threadTracer;
-            if (ThreadResults.TryGetValue(id, out threadTracer)) 
+            if (ThreadResults.TryAdd(id, value)) 
             {
-                return false;
+                return GetThreadTracer(id);
             }
-            threadTracer = new ThreadTracer(id);
-            ThreadResults[id] = threadTracer;
-            return true;       
+            return null;     
         }
 
-        internal ThreadTracer GetThreadResult(int id)
+        internal ThreadTracer GetThreadTracer(int id)
         {
             ThreadTracer threadTracer;
             if (ThreadResults.TryGetValue(id, out threadTracer))
             {
                 return threadTracer;
             }
-            return null;    
+            return null;
         }
 
 
