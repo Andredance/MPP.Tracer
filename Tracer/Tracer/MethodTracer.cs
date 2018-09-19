@@ -9,7 +9,6 @@ namespace Tracer
         private List<MethodTracer> innerMethods;
         private string name;
         private string className;
-        private long time;
         private Stopwatch stopwatch = new Stopwatch();
 
         internal string Name { get; private set;}
