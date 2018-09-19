@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace Tracer
 {
-    interface ITrace
+    public interface ITracer
     {
+        void StartTrace();
+        void StopTrace();
+        TraceResult GetTraceResult();
     }
 }
