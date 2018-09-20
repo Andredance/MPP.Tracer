@@ -1,7 +1,11 @@
 ﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Serialization;
 
 namespace Tracer
 {
+    [DataContract]
     public class TraceResult
     {
         private ConcurrentDictionary<int, ThreadTracer> threadResults;
@@ -16,6 +20,17 @@ namespace Tracer
                 }
                 return threadResults;
             }
+        }
+
+        [DataMember(Name = "threads")]
+        internal List<ThreadTracer> Result
+        {
+            get
+            {
+                return new List<ThreadTracer>(ThreadResults.Values).OrderBy(item=> item.ThreadId).ToList();
+            }
+
+            private set { }
         }
 
         internal TraceResult() { }
