@@ -9,6 +9,6 @@ namespace Tracer
 {
     public interface ISerializer
     {
-        void Serialize(TraceResult traceResult, Stream stream);
+        void SerializeResult(TraceResult traceResult, Stream stream);
     }
 }
