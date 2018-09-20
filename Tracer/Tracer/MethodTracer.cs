@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.Serialization;
 
 namespace Tracer
 {
+    [DataContract]
     internal class MethodTracer
     {
         private List<MethodTracer> innerMethods;
@@ -11,9 +13,24 @@ namespace Tracer
         private string className;
         private Stopwatch stopwatch = new Stopwatch();
 
-        internal string Name { get; private set;}
+        [DataMember(Name = "name", Order = 0)]
+        internal string Name {
+            get
+            {
+                return name;
+            }
+            private set { }
+        }
 
-        internal string ClassName { get; private set; }
+        [DataMember(Name = "class", Order = 1)]
+        internal string ClassName
+        {
+            get
+            {
+                return className;
+            }
+            private set { }
+        }
 
         internal long Time
         {
@@ -28,7 +45,19 @@ namespace Tracer
                 }
             }
         }
+
+        [DataMember(Name = "time", Order = 2)]
+        internal string TimeFormated
+        {
+            get
+            {
+                return Time.ToString() + "ms";
+            }
+
+            private set { }
+        }
         
+        [DataMember(Name= "methods", Order = 3)]
         internal List<MethodTracer> InnerMethods
         {
             get
