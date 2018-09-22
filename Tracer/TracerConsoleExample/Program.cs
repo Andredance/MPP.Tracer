@@ -39,9 +39,12 @@ namespace TracerConsoleExample
             XmlSerializator xml = new XmlSerializator();
             ConsoleWriter cw = new ConsoleWriter();
             cw.Write(traceResult, xml);
-     
-            FileWriter fw = new FileWriter("C:\\Users\\andre\\Desktop\\json.json");
+            FileWriter fw = new FileWriter("./xml.xml");
             fw.Write(traceResult, xml);
+            JSONSerializer json = new JSONSerializer();
+            cw.Write(traceResult, json);
+            fw.FileName = "./json.json";
+            fw.Write(traceResult, json);
             Console.ReadKey();
         }
     }
