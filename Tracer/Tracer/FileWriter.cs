@@ -21,5 +21,17 @@ namespace Tracer
                 serializer.SerializeResult(traceResult, fileStream);
             }
         }
+
+        public string FileName
+        {
+            get
+            {
+                return fileName;
+            }
+            set
+            {
+                fileName = value;
+            }
+        } 
     }
 }
