@@ -6,7 +6,7 @@ using System.Runtime.Serialization;
 namespace Tracer
 {
     [DataContract]
-    internal class MethodTracer
+    public class MethodTracer
     {
         private List<MethodTracer> innerMethods;
         private string name;
@@ -14,7 +14,7 @@ namespace Tracer
         private Stopwatch stopwatch = new Stopwatch();
 
         [DataMember(Name = "name", Order = 0)]
-        internal string Name {
+        public string Name {
             get
             {
                 return name;
@@ -23,7 +23,7 @@ namespace Tracer
         }
 
         [DataMember(Name = "class", Order = 1)]
-        internal string ClassName
+        public string ClassName
         {
             get
             {
@@ -32,7 +32,7 @@ namespace Tracer
             private set { }
         }
 
-        internal long Time
+        public long Time
         {
             get
             {
@@ -58,7 +58,7 @@ namespace Tracer
         }
         
         [DataMember(Name= "methods", Order = 3)]
-        internal List<MethodTracer> InnerMethods
+        public List<MethodTracer> InnerMethods
         {
             get
             {

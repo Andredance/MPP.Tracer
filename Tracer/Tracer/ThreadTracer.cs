@@ -9,7 +9,7 @@ using System.Runtime.Serialization;
 namespace Tracer
 {
     [DataContract]
-    internal class ThreadTracer
+    public class ThreadTracer
     {
         private int threadId;
         private Stack<MethodTracer> methodsInThread;
@@ -18,7 +18,7 @@ namespace Tracer
         [DataMember(Name = "id", Order = 0)]
         internal int ThreadId { get; private set; }
         
-        internal long Time
+        public long Time
         {
             get
             {
@@ -64,6 +64,15 @@ namespace Tracer
                 }
                 return tracedMethods;
             }
+        }
+
+        public List<MethodTracer> InnerMethods
+        {
+            get
+            {
+                return new List<MethodTracer>(TracedMethods);
+            }
+            private set { }
         }
 
         private void AddMethod(MethodTracer method)

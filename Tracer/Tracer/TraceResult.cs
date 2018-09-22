@@ -10,7 +10,7 @@ namespace Tracer
     {
         private ConcurrentDictionary<int, ThreadTracer> threadResults;
 
-        internal ConcurrentDictionary<int, ThreadTracer> ThreadResults
+        internal ConcurrentDictionary<int, ThreadTracer> ThreadTracer
         {
             get
             {
@@ -23,11 +23,11 @@ namespace Tracer
         }
 
         [DataMember(Name = "threads")]
-        internal List<ThreadTracer> Result
+        public List<ThreadTracer> Result
         {
             get
             {
-                return new List<ThreadTracer>(ThreadResults.Values).OrderBy(item=> item.ThreadId).ToList();
+                return new List<ThreadTracer>(ThreadTracer.Values).OrderBy(item=> item.ThreadId).ToList();
             }
 
             private set { }
@@ -37,7 +37,7 @@ namespace Tracer
 
         internal ThreadTracer AddThreadTracer(int id, ThreadTracer value)
         {
-            if (ThreadResults.TryAdd(id, value)) 
+            if (ThreadTracer.TryAdd(id, value)) 
             {
                 return GetThreadTracer(id);
             }
@@ -47,7 +47,7 @@ namespace Tracer
         internal ThreadTracer GetThreadTracer(int id)
         {
             ThreadTracer threadTracer;
-            if (ThreadResults.TryGetValue(id, out threadTracer))
+            if (ThreadTracer.TryGetValue(id, out threadTracer))
             {
                 return threadTracer;
             }
