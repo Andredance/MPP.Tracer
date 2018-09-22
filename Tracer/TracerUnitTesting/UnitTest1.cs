@@ -1,4 +1,4 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Threading;
 using Tracer;
@@ -9,15 +9,19 @@ namespace TracerUnitTest1
     public class TracerUnitTest
     {
         private static Tracer.Tracer tracer;
-        private static readonly int waitTime = 100;
-        private static readonly int threadsCount = 4;
+        private static int waitTime = 100;
+        private static int threadsCount = 3;
+        private static string timeTestFailMessage = "Failed time test: most probably actual < expected";
+        private static string classNameTestFailMessage = "Fail class name test: expected class name != actual class name";
+        private static string methodNameTestFailMessage = "Fail method name test: expected method name != actual method name";
+        private static string countTestFailMessage = "Fail count test: expected count != actual count";
 
-        private void TimeTest(long actual, long expected)
+        private bool TimeTest(long actual, long expected)
         {
-            Assert.IsTrue(actual >= expected);
+            return actual >= expected;
         }
 
-        private void SingleThreadedMethod()
+        private void SimpleTestMethod()
         {
             tracer.StartTrace();
             Thread.Sleep(waitTime);
@@ -30,7 +34,7 @@ namespace TracerUnitTest1
             Thread newThread;
             for (int i = 0; i < threadsCount; i++)
             {
-                newThread = new Thread(SingleThreadedMethod);
+                newThread = new Thread(SimpleTestMethod);
                 threads.Add(newThread);
             }
             foreach (Thread thread in threads)
@@ -49,26 +53,24 @@ namespace TracerUnitTest1
         [TestMethod]
         public void SingleThreadTest()
         {
-            // only checks time
             tracer = new Tracer.Tracer();
             tracer.StartTrace();
             Thread.Sleep(waitTime);
             tracer.StopTrace();
             long actual = tracer.GetTraceResult().Result[0].Time;
-            TimeTest(actual, waitTime);
+            Assert.AreEqual(TimeTest(actual, waitTime), true, timeTestFailMessage);
         }
 
         [TestMethod]
-        public void MultiThreadTest()
+        public void SimpleMultiThreadTest()
         {
-            // only checks time
             tracer = new Tracer.Tracer();
             var threads = new List<Thread>();
             long expected = 0;
             Thread newThread;
             for (int i = 0; i < threadsCount; i++)
             {
-                newThread = new Thread(SingleThreadedMethod);
+                newThread = new Thread(SimpleTestMethod);
                 threads.Add(newThread);
                 newThread.Start();
                 expected += waitTime;
@@ -82,13 +84,12 @@ namespace TracerUnitTest1
             {
                 actual += threadResult.Time;
             }
-            TimeTest(actual, expected);
+            Assert.AreEqual(TimeTest(actual, expected), true, timeTestFailMessage);
         }
 
         [TestMethod]
-        public void TwoLevelMultiThreadTest()
+        public void HardMultiThreadTest()
         {
-            // checks time, amount, classnames and methodnames
             tracer = new Tracer.Tracer();
             var threads = new List<Thread>();
             long expected = 0;
@@ -110,48 +111,47 @@ namespace TracerUnitTest1
             {
                 actual += threadResult.Time;
             }
-            TimeTest(actual, expected);
-            Assert.AreEqual(threadsCount * threadsCount + threadsCount, result.Result.Count);
+            Assert.AreEqual(TimeTest(actual, expected), true, timeTestFailMessage);
+            Assert.AreEqual(threadsCount * threadsCount + threadsCount, result.Result.Count, countTestFailMessage);
             int multiThreadedMethodCounter = 0, singleThreadedMethodCounter = 0;
             MethodTracer methodResult;
             foreach (ThreadTracer threadTracer in result.Result)
             {
                 methodResult = threadTracer.InnerMethods[0];
-                Assert.AreEqual(0, methodResult.InnerMethods.Count);
-                Assert.AreEqual(nameof(TracerUnitTest), methodResult.ClassName);
-                TimeTest(methodResult.Time, waitTime);
+                Assert.AreEqual(0, methodResult.InnerMethods.Count, countTestFailMessage);
+                Assert.AreEqual(nameof(TracerUnitTest), methodResult.ClassName, classNameTestFailMessage);
+                Assert.AreEqual(TimeTest(methodResult.Time, waitTime), true, timeTestFailMessage);
                 if (methodResult.Name == nameof(MultiThreadedMethod))
                     multiThreadedMethodCounter++;
-                if (methodResult.Name == nameof(SingleThreadedMethod))
+                if (methodResult.Name == nameof(SimpleTestMethod))
                     singleThreadedMethodCounter++;
             }
-            Assert.AreEqual(threadsCount, multiThreadedMethodCounter);
-            Assert.AreEqual(threadsCount * threadsCount, singleThreadedMethodCounter);
+            Assert.AreEqual(threadsCount, multiThreadedMethodCounter, countTestFailMessage);
+            Assert.AreEqual(threadsCount * threadsCount, singleThreadedMethodCounter, countTestFailMessage);
         }
 
         [TestMethod]
-        public void InnerMethodTest()
+        public void MethodInMethodTest()
         {
-            // checks time, amount, classnames and methodnames 
             tracer = new Tracer.Tracer();
             tracer.StartTrace();
             Thread.Sleep(waitTime);
-            SingleThreadedMethod();
+            SimpleTestMethod();
             tracer.StopTrace();
             TraceResult traceResult = tracer.GetTraceResult();
 
-            Assert.AreEqual(1, traceResult.Result.Count);
-            TimeTest(tracer.GetTraceResult().Result[0].Time, waitTime * 2);
-            Assert.AreEqual(1, traceResult.Result[0].InnerMethods.Count);
+            Assert.AreEqual(1, traceResult.Result.Count, countTestFailMessage);
+            Assert.AreEqual(TimeTest(traceResult.Result[0].Time, waitTime * 2), true, timeTestFailMessage);
+            Assert.AreEqual(1, traceResult.Result[0].InnerMethods.Count, countTestFailMessage);
             MethodTracer methodResult = traceResult.Result[0].InnerMethods[0];
-            Assert.AreEqual(nameof(TracerUnitTest), methodResult.ClassName);
-            Assert.AreEqual(nameof(InnerMethodTest), methodResult.Name);
-            TimeTest(methodResult.Time, waitTime * 2);
-            Assert.AreEqual(1, methodResult.InnerMethods.Count);
+            Assert.AreEqual(nameof(TracerUnitTest), methodResult.ClassName , classNameTestFailMessage);
+            Assert.AreEqual(nameof(MethodInMethodTest), methodResult.Name, methodNameTestFailMessage);
+            Assert.AreEqual(TimeTest(methodResult.Time, waitTime), true, timeTestFailMessage);
+            Assert.AreEqual(1, methodResult.InnerMethods.Count, countTestFailMessage);
             MethodTracer innerMethodResult = methodResult.InnerMethods[0];
-            Assert.AreEqual(nameof(TracerUnitTest), innerMethodResult.ClassName);
-            Assert.AreEqual(nameof(SingleThreadedMethod), innerMethodResult.Name);
-            TimeTest(innerMethodResult.Time, waitTime);
+            Assert.AreEqual(nameof(TracerUnitTest), innerMethodResult.ClassName, classNameTestFailMessage);
+            Assert.AreEqual(nameof(SimpleTestMethod), innerMethodResult.Name, methodNameTestFailMessage);
+            Assert.AreEqual(TimeTest(innerMethodResult.Time, waitTime), true, timeTestFailMessage);
         }
     }
 }
