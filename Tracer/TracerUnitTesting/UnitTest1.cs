@@ -57,7 +57,7 @@ namespace TracerUnitTest1
             tracer.StartTrace();
             Thread.Sleep(waitTime);
             tracer.StopTrace();
-            long actual = tracer.GetTraceResult().Result[0].Time;
+            long actual = tracer.GetTraceResult().ThreadsList[0].Time;
             Assert.AreEqual(TimeTest(actual, waitTime), true, timeTestFailMessage);
         }
 
@@ -80,7 +80,7 @@ namespace TracerUnitTest1
                 thread.Join();
             }
             long actual = 0;
-            foreach (ThreadTracer threadResult in tracer.GetTraceResult().Result)
+            foreach (ThreadTracer threadResult in tracer.GetTraceResult().ThreadsList)
             {
                 actual += threadResult.Time;
             }
@@ -107,15 +107,15 @@ namespace TracerUnitTest1
             }
             long actual = 0;
             TraceResult result = tracer.GetTraceResult();
-            foreach (ThreadTracer threadResult in result.Result)
+            foreach (ThreadTracer threadResult in result.ThreadsList)
             {
                 actual += threadResult.Time;
             }
             Assert.AreEqual(TimeTest(actual, expected), true, timeTestFailMessage);
-            Assert.AreEqual(threadsCount * threadsCount + threadsCount, result.Result.Count, countTestFailMessage);
+            Assert.AreEqual(threadsCount * threadsCount + threadsCount, result.ThreadsList.Count, countTestFailMessage);
             int multiThreadedMethodCounter = 0, singleThreadedMethodCounter = 0;
             MethodTracer methodResult;
-            foreach (ThreadTracer threadTracer in result.Result)
+            foreach (ThreadTracer threadTracer in result.ThreadsList)
             {
                 methodResult = threadTracer.InnerMethods[0];
                 Assert.AreEqual(0, methodResult.InnerMethods.Count, countTestFailMessage);
@@ -140,10 +140,10 @@ namespace TracerUnitTest1
             tracer.StopTrace();
             TraceResult traceResult = tracer.GetTraceResult();
 
-            Assert.AreEqual(1, traceResult.Result.Count, countTestFailMessage);
-            Assert.AreEqual(TimeTest(traceResult.Result[0].Time, waitTime * 2), true, timeTestFailMessage);
-            Assert.AreEqual(1, traceResult.Result[0].InnerMethods.Count, countTestFailMessage);
-            MethodTracer methodResult = traceResult.Result[0].InnerMethods[0];
+            Assert.AreEqual(1, traceResult.ThreadsList.Count, countTestFailMessage);
+            Assert.AreEqual(TimeTest(traceResult.ThreadsList[0].Time, waitTime * 2), true, timeTestFailMessage);
+            Assert.AreEqual(1, traceResult.ThreadsList[0].InnerMethods.Count, countTestFailMessage);
+            MethodTracer methodResult = traceResult.ThreadsList[0].InnerMethods[0];
             Assert.AreEqual(nameof(TracerUnitTest), methodResult.ClassName , classNameTestFailMessage);
             Assert.AreEqual(nameof(MethodInMethodTest), methodResult.Name, methodNameTestFailMessage);
             Assert.AreEqual(TimeTest(methodResult.Time, waitTime), true, timeTestFailMessage);

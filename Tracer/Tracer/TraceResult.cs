@@ -23,7 +23,7 @@ namespace Tracer
         }
 
         [DataMember(Name = "threads")]
-        public List<ThreadTracer> Result
+        public List<ThreadTracer> ThreadsList
         {
             get
             {
